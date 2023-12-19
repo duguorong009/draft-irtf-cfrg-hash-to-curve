@@ -29,11 +29,23 @@ def secp256k1_svdw(suite_name, is_ro):
     expander = XMDExpander(dst, hashlib.sha256, k)
     return BasicH2CSuiteDef("secp256k1", F, A, B, expander, hashlib.sha256, 48, GenericSvdW, 1, 128, is_ro, expander.dst)
 
+def secp256k1_blake2b_svdw(suite_name, is_ro):
+    dst = test_dst(suite_name)
+    k = 256
+    expander = XMDExpander(dst, hashlib.blake2b, k)
+    return BasicH2CSuiteDef("secp256k1", F, A, B, expander, hashlib.blake2b, 64, GenericSvdW, 1, 256, is_ro, expander.dst)
+
 def secp256k1_sswu(suite_name, is_ro):
     return IsoH2CSuiteDef(secp256k1_svdw(suite_name, is_ro)._replace(MapT=GenericSSWU), Ap, Bp, iso_map)
 
+def secp256k1_blake2b_sswu(suite_name, is_ro):
+    return IsoH2CSuiteDef(secp256k1_blake2b_svdw(suite_name, is_ro)._replace(MapT=GenericSSWU), Ap, Bp, iso_map)
+
 suite_name = "secp256k1_XMD:SHA-256_SSWU_RO_"
 secp256k1_sswu_ro = IsoH2CSuite(suite_name,secp256k1_sswu(suite_name, True))
+
+suite_name = "secp256k1_XMD:BLAKE2b_SSWU_RO_"
+secp256k1_blake2b_sswu_ro = IsoH2CSuite(suite_name,secp256k1_blake2b_sswu(suite_name, True))
 
 suite_name = "secp256k1_XMD:SHA-256_SVDW_RO_"
 secp256k1_svdw_ro = BasicH2CSuite(suite_name,secp256k1_svdw(suite_name, True))
@@ -46,6 +58,7 @@ secp256k1_svdw_nu = BasicH2CSuite(suite_name,secp256k1_svdw(suite_name, False))
 
 assert secp256k1_sswu_ro.m2c.Z == secp256k1_sswu_nu.m2c.Z == -11
 assert secp256k1_svdw_ro.m2c.Z == secp256k1_svdw_nu.m2c.Z == 1
+assert secp256k1_blake2b_sswu_ro.m2c.Z == -11
 
 secp256k1_order = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 secp256k1_p = p
@@ -58,6 +71,7 @@ def test_suite_secp256k1():
     _test_suite(secp256k1_svdw_ro, secp256k1_order)
     _test_suite(secp256k1_sswu_nu, secp256k1_order)
     _test_suite(secp256k1_svdw_nu, secp256k1_order)
+    _test_suite(secp256k1_blake2b_sswu_ro, secp256k1_order)
 
 if __name__ == "__main__":
     test_suite_secp256k1()

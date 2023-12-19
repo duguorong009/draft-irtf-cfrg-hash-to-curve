@@ -34,7 +34,8 @@ try:
         secp256k1_sswu_ro, \
         secp256k1_sswu_nu, \
         secp256k1_svdw_ro, \
-        secp256k1_svdw_nu
+        secp256k1_svdw_nu, \
+        secp256k1_blake2b_sswu_ro
     from sagelib.suite_25519 import \
         edw25519_sha256_ro,   \
         edw25519_sha256_nu,   \
@@ -100,7 +101,7 @@ def suite_to_ascii_file(h2c, vectors, path="ascii"):
 def create_suite_files(suite):
     print("Generating: " + suite.suite_name)
     vectors = [suite(msg, output_test_vector=True) for msg in INPUTS]
-    suite_to_ascii_file(suite, vectors)
+    # suite_to_ascii_file(suite, vectors)
     suite_to_json_file(suite, vectors)
 
 
@@ -152,14 +153,16 @@ EXPAND_LENGTHS = [32, 128]
 INPUTS = ["", "abc", "abcdef0123456789", "q128_" + "q"*128, "a512_" + "a"*512]
 
 ALL_SUITES = [
-    p256_sswu_ro, p384_sswu_ro, p521_sswu_ro, secp256k1_sswu_ro,
-    p256_sswu_nu, p384_sswu_nu, p521_sswu_nu, secp256k1_sswu_nu,
-    edw25519_sha512_ro, edw448_hash_ro,
-    edw25519_sha512_nu, edw448_hash_nu,
-    monty25519_sha512_ro, monty448_hash_ro,
-    monty25519_sha512_nu, monty448_hash_nu,
-    bls12381g1_sswu_ro, bls12381g2_sswu_ro,
-    bls12381g1_sswu_nu, bls12381g2_sswu_nu,
+    # p256_sswu_ro, p384_sswu_ro, p521_sswu_ro, secp256k1_sswu_ro,
+    # p256_sswu_nu, p384_sswu_nu, p521_sswu_nu, secp256k1_sswu_nu,
+    # edw25519_sha512_ro, edw448_hash_ro,
+    # edw25519_sha512_nu, edw448_hash_nu,
+    # monty25519_sha512_ro, monty448_hash_ro,
+    # monty25519_sha512_nu, monty448_hash_nu,
+    # bls12381g1_sswu_ro, bls12381g2_sswu_ro,
+    # bls12381g1_sswu_nu, bls12381g2_sswu_nu,
+
+    secp256k1_blake2b_sswu_ro
 ]
 
 ALL_EXPANDERS = [
@@ -169,6 +172,8 @@ ALL_EXPANDERS = [
     XOFExpander(test_dst("expander-SHAKE256"), hashlib.shake_256, 256),
     XOFExpander(test_dst("expander-SHAKE128"), hashlib.shake_128, 128),
     XOFExpander(test_dst("expander-SHAKE128-long-DST", 256), hashlib.shake_128, 128),
+        
+    XMDExpander(test_dst("expander-BLAKE2b-256"), hashlib.blake2b, 256),
 ]
 
 if __name__ == '__main__':
